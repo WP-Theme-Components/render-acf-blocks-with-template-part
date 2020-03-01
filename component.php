@@ -23,43 +23,64 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Block Callback Function.
  *
  * @since 1.0.0
- * @param array $block The block settings and attributes.
+ * @param array  $block The block settings and attributes.
  * @param string $content The block inner HTML (empty).
- * @param bool $is_preview True during AJAX preview.
- * @param (int|string) $post_id The post ID this block is saved to.
+ * @param bool   $is_preview True during AJAX preview.
+ * @param int    $post_id The post ID this block is saved to.
  */
 function render_acf_block( $block, $content = '', $is_preview = false, $post_id = 0 ) {
 	$path = get_template_path();
 	$tag  = get_block_tag();
-	$attr = array();
-
-	// Create id attribute allowing for custom "anchor" value.
-	$id = 'testimonial-' . $block['id'];
-	if ( ! empty( $block['anchor'] ) ) {
-		$id = $block['anchor'];
-	}
-
-	// Create class attribute allowing for custom "css_class" and "align" values.
-	$css_class = 'testimonial';
-	if ( !empty($block['className'] ) ) {
-		$css_class .= ' ' . $block['className'];
-	}
-	if ( !empty($block['align'] ) ) {
-		$css_class .= ' align' . $block['align'];
-	}
-
-	printf(
-		'<%1$s id="%2$s" class="%3$s">',
-		$tag,
-		$id,
-		$css_class
+	$name = str_replace( '/', '-', $block['name'] );
+	$attr = array(
+		'class' => array(
+			'wp-block-' . $name,
+		),
 	);
 
-	get_template_part( $path . $block['name'] . '.php' );
+	if ( isset( $block['anchor'] ) && ! empty( $block['anchor'] ) ) {
+		$attr['id'] = $block['anchor'];
+	}
+
+	if ( isset( $block['className'] ) && ! empty( $block['className'] ) ) {
+		$attr['class'][] = $block['className'];
+	}
+
+	if ( isset( $block['align'] ) && ! empty( $block['align'] ) ) {
+		$attr['class'][] = 'align' . $block['align'];
+	}
+
+	$atts = get_attributes( $attr, $block );
+
+	$attr['class'] = implode( ' ', $attr['class'] );
+
+	printf(
+		'<%1$s',
+		esc_attr( $tag )
+	);
+
+	foreach ( $attr as $att => $val ) {
+		printf(
+			' %1$s="%2$s"',
+			esc_attr( $att ),
+			esc_attr( $val )
+		);
+	}
+
+	echo '>';
+
+	if ( locate_template( $path . $name . '.php' ) ) {
+		get_template_part( $path . $name );
+	} else {
+		printf(
+			'Template for %1$s block not found',
+			esc_html( $block['name'] )
+		);
+	}
 
 	printf(
 		'</%1$s>',
-		$tag
+		esc_attr( $tag )
 	);
 }
 
@@ -81,4 +102,15 @@ function get_template_path() {
  */
 function get_block_tag() {
 	return apply_filters( 'wp_theme_components/block_tag', 'div' );
+}
+
+/**
+ * Filter the block's attributes
+ *
+ * @param array $attributes Array of attributes.
+ * @param array $block The block settings and attributes.
+ * @return array
+ */
+function get_attributes( $attributes, $block ) {
+	return apply_filters( 'wp_theme_components/block_attributes', $attributes, $block );
 }
