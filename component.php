@@ -31,7 +31,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 function render_acf_block( $block, $content = '', $is_preview = false, $post_id = 0 ) {
 	$path = get_template_path();
 	$tag  = get_block_tag();
-	$name = str_replace( '/', '-', $block['name'] );
+	$name = ltrim( $block['name'], 'acf/' );
 	$attr = array(
 		'class' => array(
 			'wp-block-' . $name,
@@ -85,13 +85,27 @@ function render_acf_block( $block, $content = '', $is_preview = false, $post_id 
 }
 
 /**
+ * Set the default render callback for all blocks
+ *
+ * @since 1.0.0
+ * @param array $args Block attributes.
+ * @return array
+ */
+function set_default_render_callback( $args ) {
+	$args['render_callback'] = __NAMESPACE__ . '\\render_acf_block';
+	return $args;
+}
+
+add_filter( 'acf/register_block_type_args', __NAMESPACE__ . '\\' );
+
+/**
  * Get the path the block templates are located
  *
  * @since 1.0.0
  * @return string
  */
 function get_template_path() {
-	return apply_filters( 'wp_theme_components/template_path', 'template-parts/acf-blocks/' );
+	return apply_filters( 'wp_theme_components/render_acf_blocks_with_template_part/template_path', 'template-parts/acf-blocks/' );
 }
 
 /**
@@ -101,7 +115,7 @@ function get_template_path() {
  * @return string
  */
 function get_block_tag() {
-	return apply_filters( 'wp_theme_components/block_tag', 'div' );
+	return apply_filters( 'wp_theme_components/render_acf_blocks_with_template_part/block_tag', 'div' );
 }
 
 /**
@@ -112,5 +126,5 @@ function get_block_tag() {
  * @return array
  */
 function get_attributes( $attributes, $block ) {
-	return apply_filters( 'wp_theme_components/block_attributes', $attributes, $block );
+	return apply_filters( 'wp_theme_components/render_acf_blocks_with_template_part/block_attributes', $attributes, $block );
 }

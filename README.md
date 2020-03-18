@@ -4,7 +4,7 @@ A generic ACF Blocks render callback to handle basic block features.
 
 ### Usage
 
-Just set the render callback attribute in your `acf_register_block_type` call.
+From ACF 5.8.9 the render callback is set automatically, otherwise set the render callback attribute in your `acf_register_block_type` call.
 
 ```
 acf_register_block_type(
