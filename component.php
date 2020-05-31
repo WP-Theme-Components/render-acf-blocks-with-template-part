@@ -69,8 +69,8 @@ function render_acf_block( $block, $content = '', $is_preview = false, $post_id 
 
 	echo '>';
 
-	if ( locate_template( $path . $name . '.php' ) ) {
-		get_template_part( $path . $name );
+	if ( locate_template( $path . $name . '/block.php' ) ) {
+		get_template_part( $path . $name . '/block' );
 	} else {
 		printf(
 			'Template for %1$s block not found',
@@ -96,7 +96,7 @@ function set_default_render_callback( $args ) {
 	return $args;
 }
 
-add_filter( 'acf/register_block_type_args', __NAMESPACE__ . '\\' );
+add_filter( 'acf/register_block_type_args', __NAMESPACE__ . '\\set_default_render_callback' );
 
 /**
  * Get the path the block templates are located
@@ -121,6 +121,7 @@ function get_block_tag() {
 /**
  * Filter the block's attributes
  *
+ * @since 1.0.0
  * @param array $attributes Array of attributes.
  * @param array $block The block settings and attributes.
  * @return array
