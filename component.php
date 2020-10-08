@@ -5,7 +5,7 @@
  * @package WP-Theme-Components
  * @subpackage render-acf-blocks-with-template-part
  * @author Cameron Jones
- * @version 1.0.0
+ * @version 1.0.1
  */
 
 namespace WP_Theme_Components\Render_ACF_Blocks_With_Template_Part;
@@ -31,7 +31,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 function render_acf_block( $block, $content = '', $is_preview = false, $post_id = 0 ) {
 	$path = get_template_path();
 	$tag  = get_block_tag();
-	$name = ltrim( $block['name'], 'acf/' );
+	$name = substr( $block['name'], 4 );
 	$attr = array(
 		'class' => array(
 			'wp-block-' . $name,
